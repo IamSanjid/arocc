@@ -320,9 +320,20 @@ pub fn buildLinkerArgs(self: *const Linux, tc: *const Toolchain, argv: *std.Arra
 fn getMultiarchTriple(target: *const Target) ?[]const u8 {
     const is_android = target.abi.isAndroid();
     const is_mips_r6 = std.Target.mips.featureSetHas(target.cpu.features, .mips32r6);
+    const eabi_arch = switch (target.cpu.arch) {
+        .arm,
+        .armeb,
+        .thumb,
+        .thumbeb,
+        .csky,
+        .powerpc,
+        .powerpcle,
+        => true,
+        else => target.cpu.arch.isMips32(),
+    };
     return switch (target.cpu.arch) {
-        .arm, .thumb => if (is_android) "arm-linux-androideabi" else if (target.abi == .gnueabihf) "arm-linux-gnueabihf" else "arm-linux-gnueabi",
-        .armeb, .thumbeb => if (target.abi == .gnueabihf) "armeb-linux-gnueabihf" else "armeb-linux-gnueabi",
+        .arm, .thumb => if (is_android) "arm-linux-androideabi" else if (target.abi == .gnu and eabi_arch) "arm-linux-gnueabihf" else "arm-linux-gnueabi",
+        .armeb, .thumbeb => if (target.abi == .gnu and eabi_arch) "armeb-linux-gnueabihf" else "armeb-linux-gnueabi",
         .aarch64 => if (is_android) "aarch64-linux-android" else "aarch64-linux-gnu",
         .aarch64_be => "aarch64_be-linux-gnu",
         .x86 => if (is_android) "i686-linux-android" else "i386-linux-gnu",
