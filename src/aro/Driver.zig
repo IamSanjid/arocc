@@ -1122,7 +1122,8 @@ fn parseTarget(
         }
     }
 
-    const zig_target = std.zig.system.resolveTargetQuery(d.comp.io, query) catch |e|
+    var diags: std.zig.system.ResolveTargetDiagnostics = .none;
+    const zig_target = std.zig.system.resolveTargetQuery(d.comp.io, d.comp.arena, query, &diags) catch |e|
         return d.fatal("unable to resolve target: {s}", .{errorDescription(e)});
 
     if (query.isNative()) {

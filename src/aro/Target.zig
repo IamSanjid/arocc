@@ -1450,7 +1450,6 @@ fn llvmAbiName(target: *const Target) []const u8 {
 
         // Android / OpenHarmony
         .android => "android",
-        .androidsf => "androidsf",
         .ohos => "ohos",
         .ohossf => "ohoseabi",
 
@@ -2186,7 +2185,7 @@ pub fn armFloatAbi(target: *const Target) ArmFloatAbi {
             .ohos, .ohossf => .soft,
             .eabihf, .gnueabihf, .musleabihf => .hard,
             // EABI is always AAPCS, and if it was not marked 'hard', it's softfp.
-            .eabi, .gnueabi, .musleabi, .android, .androidsf => .soft_fp,
+            .eabi, .gnueabi, .musleabi, .android => .soft_fp,
             else => .soft,
         },
     };
